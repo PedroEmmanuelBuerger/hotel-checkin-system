@@ -1,0 +1,13 @@
+# Arquivos e diretórios a serem ignorados no build Docker
+node_modules/
+dist/
+.git/
+.gitignore
+README.md
+*.md
+.idea/
+*.iml
+.vscode/
+*.log
+.DS_Store
+Thumbs.db 
