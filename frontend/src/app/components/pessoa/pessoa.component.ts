@@ -4,12 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 interface Pessoa {
-  id?: string;
   nome: string;
   documento: string;
   telefone: string;
-  dataCriacao?: string;
-  dataAtualizacao?: string;
 }
 
 @Component({
@@ -19,12 +16,12 @@ interface Pessoa {
   template: `
     <div class="container mx-auto p-6">
       <h1 class="text-3xl font-bold mb-6 text-center text-blue-600">
-         Sistema de Hotel - CRUD de Pessoas
+        Sistema de Hotel - CRUD de Pessoas
       </h1>
 
       <div class="bg-white rounded-lg shadow-md p-6 mb-6">
         <h2 class="text-xl font-semibold mb-4">
-          {{ editando ? ' Editar Pessoa' : ' Nova Pessoa' }}
+          {{ editando ? 'Editar Pessoa' : 'Nova Pessoa' }}
         </h2>
         
         <form (ngSubmit)="salvarPessoa()" #pessoaForm="ngForm" class="space-y-4">
@@ -47,6 +44,7 @@ interface Pessoa {
                 [(ngModel)]="pessoa.documento" 
                 name="documento" 
                 required
+                [readonly]="editando"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Digite o documento">
             </div>
@@ -100,7 +98,7 @@ interface Pessoa {
 
       <div class="bg-white rounded-lg shadow-md">
         <div class="p-6 border-b border-gray-200">
-          <h2 class="text-xl font-semibold">👥 Lista de Pessoas</h2>
+          <h2 class="text-xl font-semibold">Lista de Pessoas</h2>
         </div>
         
         <div class="overflow-x-auto">
@@ -110,7 +108,6 @@ interface Pessoa {
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Documento</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefone</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data Criação</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
               </tr>
             </thead>
@@ -119,25 +116,22 @@ interface Pessoa {
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ p.nome }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ p.documento }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ p.telefone }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {{ p.dataCriacao | date:'dd/MM/yyyy HH:mm' }}
-                </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button 
                     (click)="editarPessoa(p)"
                     class="text-indigo-600 hover:text-indigo-900 mr-3">
-                     Editar
+                    Editar
                   </button>
                   <button 
-                    (click)="deletarPessoa(p.id!)"
+                    (click)="deletarPessoa(p.documento)"
                     class="text-red-600 hover:text-red-900">
-                     Deletar
+                    Deletar
                   </button>
                 </td>
               </tr>
               
               <tr *ngIf="pessoas.length === 0">
-                <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                <td colspan="4" class="px-6 py-4 text-center text-gray-500">
                   Nenhuma pessoa cadastrada
                 </td>
               </tr>
@@ -168,9 +162,9 @@ export class PessoaComponent implements OnInit {
   pessoas: Pessoa[] = [];
   pessoa: Pessoa = { nome: '', documento: '', telefone: '' };
   editando = false;
-  pessoaEditandoId: string = '';
+  documentoEditando: string = '';
   totalPessoas = 0;
-  statusBackend = ' Verificando...';
+  statusBackend = 'Verificando...';
   mensagem = '';
   mensagemTipo: 'success' | 'error' | 'info' = 'info';
 
@@ -185,10 +179,10 @@ export class PessoaComponent implements OnInit {
   verificarBackend() {
     this.http.get<any>('/api/pessoas/health').subscribe({
       next: (response) => {
-        this.statusBackend = ' Online';
+        this.statusBackend = 'Online';
       },
       error: (error) => {
-        this.statusBackend = ' Offline';
+        this.statusBackend = 'Offline';
         console.error('Erro ao conectar com backend:', error);
       }
     });
@@ -242,7 +236,7 @@ export class PessoaComponent implements OnInit {
   }
 
   atualizarPessoa() {
-    this.http.put<Pessoa>(`/api/pessoas/${this.pessoaEditandoId}`, this.pessoa).subscribe({
+    this.http.put<Pessoa>(`/api/pessoas/documento/${this.documentoEditando}`, this.pessoa).subscribe({
       next: (response) => {
         this.mostrarMensagem('Pessoa atualizada com sucesso!', 'success');
         this.limparFormulario();
@@ -258,16 +252,16 @@ export class PessoaComponent implements OnInit {
   editarPessoa(pessoa: Pessoa) {
     this.pessoa = { ...pessoa };
     this.editando = true;
-    this.pessoaEditandoId = pessoa.id!;
+    this.documentoEditando = pessoa.documento;
   }
 
   cancelarEdicao() {
     this.limparFormulario();
   }
 
-  deletarPessoa(id: string) {
+  deletarPessoa(documento: string) {
     if (confirm('Tem certeza que deseja deletar esta pessoa?')) {
-      this.http.delete(`/api/pessoas/${id}`).subscribe({
+      this.http.delete(`/api/pessoas/documento/${documento}`).subscribe({
         next: (response) => {
           this.mostrarMensagem('Pessoa deletada com sucesso!', 'success');
           this.carregarPessoas();
@@ -284,7 +278,7 @@ export class PessoaComponent implements OnInit {
   limparFormulario() {
     this.pessoa = { nome: '', documento: '', telefone: '' };
     this.editando = false;
-    this.pessoaEditandoId = '';
+    this.documentoEditando = '';
   }
 
   mostrarMensagem(texto: string, tipo: 'success' | 'error' | 'info') {

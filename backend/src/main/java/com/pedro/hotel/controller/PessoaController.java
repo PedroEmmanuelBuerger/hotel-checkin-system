@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,18 +37,6 @@ public class PessoaController {
     public ResponseEntity<List<Pessoa>> listarTodas() {
         List<Pessoa> pessoas = pessoaService.listarTodas();
         return ResponseEntity.ok(pessoas);
-    }
-    
-    @GetMapping("/{id}")
-    public ResponseEntity<?> buscarPorId(@PathVariable String id) {
-        Optional<Pessoa> pessoa = pessoaService.buscarPorId(id);
-        if (pessoa.isPresent()) {
-            return ResponseEntity.ok(pessoa.get());
-        } else {
-            Map<String, String> erro = new HashMap<>();
-            erro.put("erro", "Pessoa com ID " + id + " não encontrada");
-            return ResponseEntity.notFound().build();
-        }
     }
     
     @GetMapping("/documento/{documento}")
@@ -90,10 +77,10 @@ public class PessoaController {
         return ResponseEntity.ok(resultado);
     }
     
-    @PutMapping("/{id}")
-    public ResponseEntity<?> atualizarPessoa(@PathVariable String id, @Valid @RequestBody Pessoa pessoa) {
+    @PutMapping("/documento/{documento}")
+    public ResponseEntity<?> atualizarPessoa(@PathVariable String documento, @Valid @RequestBody Pessoa pessoa) {
         try {
-            Pessoa pessoaAtualizada = pessoaService.atualizarPessoa(id, pessoa);
+            Pessoa pessoaAtualizada = pessoaService.atualizarPessoa(documento, pessoa);
             return ResponseEntity.ok(pessoaAtualizada);
         } catch (RuntimeException e) {
             Map<String, String> erro = new HashMap<>();
@@ -102,23 +89,9 @@ public class PessoaController {
         }
     }
     
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deletarPessoa(@PathVariable String id) {
-        boolean deletado = pessoaService.deletarPessoa(id);
-        if (deletado) {
-            Map<String, String> mensagem = new HashMap<>();
-            mensagem.put("mensagem", "Pessoa com ID " + id + " deletada com sucesso");
-            return ResponseEntity.ok(mensagem);
-        } else {
-            Map<String, String> erro = new HashMap<>();
-            erro.put("erro", "Pessoa com ID " + id + " não encontrada");
-            return ResponseEntity.notFound().build();
-        }
-    }
-    
     @DeleteMapping("/documento/{documento}")
-    public ResponseEntity<?> deletarPorDocumento(@PathVariable String documento) {
-        boolean deletado = pessoaService.deletarPorDocumento(documento);
+    public ResponseEntity<?> deletarPessoa(@PathVariable String documento) {
+        boolean deletado = pessoaService.deletarPessoa(documento);
         if (deletado) {
             Map<String, String> mensagem = new HashMap<>();
             mensagem.put("mensagem", "Pessoa com documento " + documento + " deletada com sucesso");
@@ -130,26 +103,11 @@ public class PessoaController {
         }
     }
     
-    @GetMapping("/periodo")
-    public ResponseEntity<List<Pessoa>> buscarPorPeriodo(
-            @RequestParam String inicio,
-            @RequestParam String fim) {
-        try {
-            LocalDateTime dataInicio = LocalDateTime.parse(inicio);
-            LocalDateTime dataFim = LocalDateTime.parse(fim);
-            List<Pessoa> pessoas = pessoaService.buscarPorPeriodo(dataInicio, dataFim);
-            return ResponseEntity.ok(pessoas);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-    
     @GetMapping("/health")
     public ResponseEntity<Map<String, String>> health() {
         Map<String, String> status = new HashMap<>();
         status.put("status", "OK");
         status.put("servico", "Pessoa CRUD");
-        status.put("timestamp", LocalDateTime.now().toString());
         return ResponseEntity.ok(status);
     }
 } 

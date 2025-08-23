@@ -2,7 +2,6 @@ package com.pedro.hotel.repository;
 
 import com.pedro.hotel.model.Pessoa;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,7 +20,7 @@ public interface PessoaRepository extends MongoRepository<Pessoa, String> {
     
     boolean existsByTelefone(String telefone);
     
-    List<Pessoa> findByDataCriacaoBetween(java.time.LocalDateTime inicio, java.time.LocalDateTime fim);
+    void deleteByDocumento(String documento);
     
     long count();
 } 

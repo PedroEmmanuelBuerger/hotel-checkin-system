@@ -5,14 +5,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
 
 @Document(collection = "pessoas")
 public class Pessoa {
-    
-    @Id
-    private String id;
     
     @NotBlank(message = "Nome é obrigatório")
     private String nome;
@@ -24,27 +19,13 @@ public class Pessoa {
     @NotBlank(message = "Telefone é obrigatório")
     private String telefone;
     
-    private LocalDateTime dataCriacao;
-    private LocalDateTime dataAtualizacao;
-    
     public Pessoa() {
-        this.dataCriacao = LocalDateTime.now();
-        this.dataAtualizacao = LocalDateTime.now();
     }
     
     public Pessoa(String nome, String documento, String telefone) {
-        this();
         this.nome = nome;
         this.documento = documento;
         this.telefone = telefone;
-    }
-    
-    public String getId() {
-        return id;
-    }
-    
-    public void setId(String id) {
-        this.id = id;
     }
     
     public String getNome() {
@@ -71,31 +52,12 @@ public class Pessoa {
         this.telefone = telefone;
     }
     
-    public LocalDateTime getDataCriacao() {
-        return dataCriacao;
-    }
-    
-    public void setDataCriacao(LocalDateTime dataCriacao) {
-        this.dataCriacao = dataCriacao;
-    }
-    
-    public LocalDateTime getDataAtualizacao() {
-        return dataAtualizacao;
-    }
-    
-    public void setDataAtualizacao(LocalDateTime dataAtualizacao) {
-        this.dataAtualizacao = dataAtualizacao;
-    }
-    
     @Override
     public String toString() {
         return "Pessoa{" +
-                "id='" + id + '\'' +
-                ", nome='" + nome + '\'' +
+                "nome='" + nome + '\'' +
                 ", documento='" + documento + '\'' +
                 ", telefone='" + telefone + '\'' +
-                ", dataCriacao=" + dataCriacao +
-                ", dataAtualizacao=" + dataAtualizacao +
                 '}';
     }
 } 

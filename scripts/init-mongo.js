@@ -29,7 +29,6 @@ db.checkins.createIndex({ "bookingId": 1 }, { unique: true });
 db.pessoas.createIndex({ "documento": 1 }, { unique: true });
 db.pessoas.createIndex({ "telefone": 1 }, { unique: true });
 db.pessoas.createIndex({ "nome": 1 });
-db.pessoas.createIndex({ "dataCriacao": 1 });
 
 print("MongoDB inicializado com sucesso!");
 print("Usuário da aplicação criado: hotel_app");

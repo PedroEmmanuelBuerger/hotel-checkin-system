@@ -5,7 +5,6 @@ import com.pedro.hotel.repository.PessoaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,14 +23,7 @@ public class PessoaService {
             throw new RuntimeException("Pessoa com telefone " + pessoa.getTelefone() + " já existe");
         }
         
-        pessoa.setDataCriacao(LocalDateTime.now());
-        pessoa.setDataAtualizacao(LocalDateTime.now());
-        
         return pessoaRepository.save(pessoa);
-    }
-    
-    public Optional<Pessoa> buscarPorId(String id) {
-        return pessoaRepository.findById(id);
     }
     
     public Optional<Pessoa> buscarPorDocumento(String documento) {
@@ -54,8 +46,8 @@ public class PessoaService {
         return pessoaRepository.count();
     }
     
-    public Pessoa atualizarPessoa(String id, Pessoa pessoaAtualizada) {
-        Optional<Pessoa> pessoaExistente = pessoaRepository.findById(id);
+    public Pessoa atualizarPessoa(String documento, Pessoa pessoaAtualizada) {
+        Optional<Pessoa> pessoaExistente = pessoaRepository.findByDocumento(documento);
         
         if (pessoaExistente.isPresent()) {
             Pessoa pessoa = pessoaExistente.get();
@@ -73,33 +65,19 @@ public class PessoaService {
             pessoa.setNome(pessoaAtualizada.getNome());
             pessoa.setDocumento(pessoaAtualizada.getDocumento());
             pessoa.setTelefone(pessoaAtualizada.getTelefone());
-            pessoa.setDataAtualizacao(LocalDateTime.now());
             
             return pessoaRepository.save(pessoa);
         } else {
-            throw new RuntimeException("Pessoa com ID " + id + " não encontrada");
+            throw new RuntimeException("Pessoa com documento " + documento + " não encontrada");
         }
     }
     
-    public boolean deletarPessoa(String id) {
-        if (pessoaRepository.existsById(id)) {
-            pessoaRepository.deleteById(id);
+    public boolean deletarPessoa(String documento) {
+        if (pessoaRepository.existsByDocumento(documento)) {
+            pessoaRepository.deleteByDocumento(documento);
             return true;
         }
         return false;
-    }
-    
-    public boolean deletarPorDocumento(String documento) {
-        Optional<Pessoa> pessoa = pessoaRepository.findByDocumento(documento);
-        if (pessoa.isPresent()) {
-            pessoaRepository.delete(pessoa.get());
-            return true;
-        }
-        return false;
-    }
-    
-    public List<Pessoa> buscarPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
-        return pessoaRepository.findByDataCriacaoBetween(inicio, fim);
     }
     
     public boolean existePorDocumento(String documento) {
