@@ -30,6 +30,9 @@ db.pessoas.createIndex({ "documento": 1 }, { unique: true });
 db.pessoas.createIndex({ "telefone": 1 }, { unique: true });
 db.pessoas.createIndex({ "nome": 1 });
 
+db.checkins.createIndex({ "pessoa.documento": 1 });
+db.checkins.createIndex({ "pessoa.nome": 1 });
+
 print("MongoDB inicializado com sucesso!");
 print("Usuário da aplicação criado: hotel_app");
 print("Coleções criadas: guests, rooms, bookings, checkins, pessoas");
