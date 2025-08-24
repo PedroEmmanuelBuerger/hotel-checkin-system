@@ -22,8 +22,14 @@ db.pessoas.createIndex({ "nome": 1 });
 
 db.checkins.createIndex({ "pessoa.documento": 1 });
 db.checkins.createIndex({ "pessoa.nome": 1 });
+db.checkins.createIndex({ "dataEntrada": 1 });
+db.checkins.createIndex({ "dataSaida": 1 });
+db.checkins.createIndex({ "adicionalVeiculo": 1 });
+db.checkins.createIndex({ "dataEntrada": 1, "dataSaida": 1 });
+db.checkins.createIndex({ "pessoa.documento": 1, "dataEntrada": 1, "dataSaida": 1 });
 
 print("MongoDB inicializado com sucesso!");
 print("Usuário da aplicação criado: hotel_app");
 print("Coleções criadas: checkins, pessoas");
-print("Índices criados para todas as coleções"); 
+print("Índices criados para todas as coleções");
+print("Índices de check-in otimizados para consultas por período e disponibilidade"); 
