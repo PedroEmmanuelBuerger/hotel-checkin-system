@@ -16,6 +16,7 @@ interface Checkin {
   dataEntrada: string;
   dataSaida: string;
   adicionalVeiculo: boolean;
+  valorGasto?: number;
 }
 
 @Component({
@@ -32,21 +33,27 @@ export class CheckinComponent implements OnInit {
     dataSaida: '',
     adicionalVeiculo: false
   };
-
+  
   checkins: Checkin[] = [];
   pessoas: Pessoa[] = [];
+  mensagem: string = '';
+  mensagemTipo: 'success' | 'error' | 'info' = 'info';
+  mostrarPopupPessoa = false;
+  mostrarPopupGerenciar = false;
+  filtroAtivo: string = 'todos';
+  paginaAtual = 1;
+  itensPorPagina = 10;
   totalCheckins = 0;
   statusBackend = 'Verificando...';
-  mensagem = '';
-  mensagemTipo: 'success' | 'error' | 'info' = 'info';
   
-  filtroAtivo = 'todos';
   filtroDocumento = '';
   filtroNome = '';
   
-  mostrarPopupPessoa = false;
-  mostrarPopupGerenciar = false;
-
+  // Propriedades para busca de pessoas
+  buscaPessoa: string = '';
+  sugestoesPessoas: Pessoa[] = [];
+  mostrarSugestoes: boolean = false;
+  
   constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
@@ -91,6 +98,43 @@ export class CheckinComponent implements OnInit {
     }
   }
 
+  buscarPessoas(event: any) {
+    const termo = event.target.value.toLowerCase().trim();
+    
+    if (termo.length < 2) {
+      this.sugestoesPessoas = [];
+      this.mostrarSugestoes = false;
+      return;
+    }
+
+    this.sugestoesPessoas = this.pessoas.filter(pessoa => 
+      pessoa.nome.toLowerCase().includes(termo) || 
+      pessoa.documento.toLowerCase().includes(termo)
+    );
+    
+    this.mostrarSugestoes = this.sugestoesPessoas.length > 0;
+  }
+
+  selecionarPessoa(pessoa: Pessoa) {
+    this.checkin.pessoa = pessoa;
+    this.buscaPessoa = `${pessoa.nome} - ${pessoa.documento}`;
+    this.mostrarSugestoes = false;
+    this.sugestoesPessoas = [];
+  }
+
+  limparBuscaPessoa() {
+    this.buscaPessoa = '';
+    this.sugestoesPessoas = [];
+    this.mostrarSugestoes = false;
+  }
+
+  onBlurBusca() {
+    // Pequeno delay para permitir o clique nas sugestões
+    setTimeout(() => {
+      this.mostrarSugestoes = false;
+    }, 200);
+  }
+
   listarPessoas() {
     this.http.get<Pessoa[]>('/api/pessoas').subscribe({
       next: (response) => {
@@ -133,7 +177,10 @@ export class CheckinComponent implements OnInit {
   listarCheckins() {
     this.http.get<Checkin[]>('/api/checkins').subscribe({
       next: (response) => {
-        this.checkins = response;
+        this.checkins = response.map(checkin => ({
+          ...checkin,
+          valorGasto: this.calcularValorGasto(checkin)
+        }));
         this.contarCheckins();
       },
       error: (error) => {
@@ -147,7 +194,10 @@ export class CheckinComponent implements OnInit {
     if (this.filtroDocumento.trim()) {
       this.http.get<Checkin[]>(`/api/checkins/pessoa/documento/${this.filtroDocumento}`).subscribe({
         next: (response) => {
-          this.checkins = response;
+          this.checkins = response.map(checkin => ({
+            ...checkin,
+            valorGasto: this.calcularValorGasto(checkin)
+          }));
           this.filtroAtivo = 'documento';
         },
         error: (error) => {
@@ -162,7 +212,10 @@ export class CheckinComponent implements OnInit {
     if (this.filtroNome.trim()) {
       this.http.get<Checkin[]>(`/api/checkins/pessoa/nome/${this.filtroNome}`).subscribe({
         next: (response) => {
-          this.checkins = response;
+          this.checkins = response.map(checkin => ({
+            ...checkin,
+            valorGasto: this.calcularValorGasto(checkin)
+          }));
           this.filtroAtivo = 'nome';
         },
         error: (error) => {
@@ -176,7 +229,10 @@ export class CheckinComponent implements OnInit {
   buscarCheckinsPresentes() {
     this.http.get<Checkin[]>('/api/checkins/presentes').subscribe({
       next: (response) => {
-        this.checkins = response;
+        this.checkins = response.map(checkin => ({
+          ...checkin,
+          valorGasto: this.calcularValorGasto(checkin)
+        }));
         this.filtroAtivo = 'presentes';
       },
       error: (error) => {
@@ -189,7 +245,10 @@ export class CheckinComponent implements OnInit {
   buscarCheckinsSaidos() {
     this.http.get<Checkin[]>('/api/checkins/saidos').subscribe({
       next: (response) => {
-        this.checkins = response;
+        this.checkins = response.map(checkin => ({
+          ...checkin,
+          valorGasto: this.calcularValorGasto(checkin)
+        }));
         this.filtroAtivo = 'saidos';
       },
       error: (error) => {
@@ -204,6 +263,7 @@ export class CheckinComponent implements OnInit {
     this.filtroNome = '';
     this.filtroAtivo = 'todos';
     this.listarCheckins();
+    this.mostrarMensagem('Filtros removidos. Mostrando todos os check-ins.', 'info');
   }
 
   contarCheckins() {
@@ -236,6 +296,7 @@ export class CheckinComponent implements OnInit {
       dataSaida: '',
       adicionalVeiculo: false
     };
+    this.limparBuscaPessoa();
   }
 
   validarFormulario(): boolean {

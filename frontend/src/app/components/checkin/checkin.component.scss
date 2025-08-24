@@ -1,1 +1,691 @@
-/* Estilos mínimos para o componente de check-in */
+/* Estilos para replicar exatamente a imagem enviada */
+
+/* Container principal */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Título principal */
+h1 {
+  color: #2c3e50;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+/* Botões do topo */
+.top-buttons {
+  margin-bottom: 30px;
+  display: flex;
+  gap: 30px; /* Aumentado para 30px para separar mais os botões */
+}
+
+.top-buttons button {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.top-buttons button:first-child {
+  background-color: #3498db;
+  color: white;
+}
+
+.top-buttons button:first-child:hover {
+  background-color: #2980b9;
+}
+
+.top-buttons button:last-child {
+  background-color: #27ae60;
+  color: white;
+}
+
+.top-buttons button:last-child:hover {
+  background-color: #229954;
+}
+
+/* Cards principais */
+.main-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 25px;
+  overflow: hidden;
+}
+
+/* Card Header */
+.card-header {
+  background-color: #3498db;
+  color: white;
+  padding: 15px 20px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* Alinha o conteúdo à esquerda */
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* Conteúdo dos cards */
+.card-content {
+  padding: 25px;
+}
+
+/* Grid do formulário de check-in */
+.checkin-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px; /* Reduzido o gap */
+  margin-bottom: 20px; /* Reduzido ainda mais */
+}
+
+/* Linha pessoa + veículo */
+.pessoa-veiculo-row {
+  display: flex; /* Mudado para flexbox para melhor controle */
+  gap: 20px;
+  align-items: flex-end; /* Alinha na parte inferior */
+  margin-bottom: 20px;
+}
+
+.pessoa-field {
+  flex: 1; /* Ocupa o espaço disponível */
+  margin-bottom: 0;
+}
+
+.pessoa-field label {
+  font-size: 16px !important; /* Aumentado a fonte da label */
+  font-weight: 500;
+  color: #7f8c8d;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+
+
+/* Campos de formulário */
+.form-field {
+  margin-bottom: 12px; /* Reduzido ainda mais */
+}
+
+.form-field label {
+  display: block;
+  font-size: 12px; /* Aumentado para melhor legibilidade */
+  font-weight: 500;
+  color: #7f8c8d;
+  margin-bottom: 6px; /* Aumentado para melhor espaçamento */
+  line-height: 1.2; /* Mantido para boa legibilidade */
+  text-transform: none; /* Garante que não há transformação de texto */
+  letter-spacing: normal; /* Garante espaçamento normal entre letras */
+}
+
+.form-field input,
+.form-field select {
+  width: 100%;
+  padding: 8px 10px; /* Mantido para boa proporção */
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px; /* Aumentado para melhor legibilidade */
+  transition: border-color 0.2s ease;
+  background-color: white;
+  height: 36px; /* Altura fixa para todos os campos */
+  box-sizing: border-box;
+}
+
+/* Estilo específico para o select da pessoa */
+.form-select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px; /* Aumentado para consistência */
+  transition: border-color 0.2s ease;
+  background-color: white;
+  height: 36px;
+  box-sizing: border-box;
+}
+
+/* Sistema de busca com autocomplete */
+.search-container {
+  position: relative;
+  width: 100%;
+}
+
+
+
+/* Nova classe específica para o campo pessoa */
+.pessoa-input-field {
+  margin-bottom: 12px;
+}
+
+.pessoa-input-field label {
+  display: block;
+  font-size: 12px !important; /* Mesmo tamanho dos outros campos */
+  font-weight: 500;
+  color: #7f8c8d;
+  margin-bottom: 6px !important; /* Mesmo espaçamento dos outros campos */
+  line-height: 1.2;
+}
+
+.pessoa-input-field .search-container input {
+  width: 100% !important;
+  height: 36px !important; /* Mesma altura dos outros campos */
+  padding: 8px 10px !important; /* Mesmo padding dos outros campos */
+  font-size: 14px !important; /* Mesma fonte dos outros campos */
+  border: 1px solid #ddd !important;
+  border-radius: 6px !important;
+  background-color: white !important;
+  box-sizing: border-box !important;
+  transition: border-color 0.2s ease;
+  min-height: 36px !important;
+  max-height: 36px !important;
+  line-height: 36px !important;
+}
+
+/* Força o container de busca a ter a mesma largura dos outros campos */
+.pessoa-input-field .search-container {
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  flex: 1 !important;
+}
+
+/* Ajusta o layout para dar mais espaço ao campo de busca */
+.pessoa-input-field .input-checkbox-row {
+  gap: 10px !important; /* Reduz ainda mais o gap */
+}
+
+.pessoa-input-field .checkbox-field {
+  flex-shrink: 0 !important;
+  min-width: auto !important;
+  width: auto !important;
+}
+
+
+
+/* Nova estrutura para input e checkbox na mesma linha */
+.input-checkbox-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+}
+
+.input-checkbox-row .search-container {
+  flex: 1;
+}
+
+
+
+
+
+.input-checkbox-row .checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.input-checkbox-row .checkbox-field input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.input-checkbox-row .checkbox-field label {
+  font-size: 14px;
+  color: #7f8c8d;
+  margin: 0;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+
+
+
+
+.sugestoes-container {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  margin-top: 2px;
+}
+
+.sugestao-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #f8f9fa;
+  transition: background-color 0.2s ease;
+  font-size: 12px;
+}
+
+.sugestao-item:hover {
+  background-color: #f8f9fa;
+}
+
+.sugestao-item:last-child {
+  border-bottom: none;
+}
+
+
+
+
+
+
+
+.form-field input:focus,
+.form-field select:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+/* Campo pessoa ocupa toda a largura */
+.form-field:not(.checkin-grid .form-field) {
+  grid-column: 1 / -1; /* Ocupa toda a largura disponível */
+}
+
+/* Checkbox personalizado */
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  margin-top: 15px; /* Aumentado o espaçamento */
+  gap: 12px; /* Espaçamento entre checkbox e label */
+}
+
+.checkbox-container input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+
+.checkbox-container label {
+  margin: 0;
+  font-size: 14px;
+  color: #7f8c8d;
+  cursor: pointer;
+}
+
+/* Resultados da busca */
+.resultados-busca {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.resultado-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #f8f9fa;
+  transition: background-color 0.2s ease;
+}
+
+.resultado-item:hover {
+  background-color: #f8f9fa;
+}
+
+.resultado-item:last-child {
+  border-bottom: none;
+}
+
+/* Pessoa selecionada */
+.pessoa-selecionada {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #e8f5e8;
+  border: 1px solid #4caf50;
+  border-radius: 4px;
+  color: #2e7d32;
+  font-size: 13px;
+}
+
+/* Checkbox personalizado */
+.checkbox-field {
+  flex-shrink: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px; /* Reduzido o gap para ficar proporcional */
+}
+
+.checkbox-field input[type="checkbox"] {
+  width: 14px; /* Reduzido para ficar proporcional */
+  height: 14px; /* Reduzido para ficar proporcional */
+  margin: 0;
+  cursor: pointer;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+
+.checkbox-field label {
+  margin: 0;
+  font-size: 11px; /* Mesmo tamanho das outras labels */
+  color: #7f8c8d;
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1.2; /* Mesmo line-height das outras labels */
+}
+
+/* Botão salvar */
+.save-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin-top: 20px; /* Espaçamento em relação ao checkbox */
+}
+
+.save-button:hover {
+  background-color: #2980b9;
+}
+
+.save-button:active {
+  transform: translateY(1px);
+}
+
+/* Seção de filtros */
+.filters-section {
+  margin-bottom: 25px;
+  padding: 15px 0;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.filters-label {
+  font-size: 14px;
+  color: #7f8c8d;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.filter-buttons {
+  display: flex;
+  flex-direction: row; /* Mudado para row para ficarem lado a lado */
+  gap: 25px; /* Aumentado o gap para separar os filtros */
+  align-items: flex-start;
+}
+
+.filter-button {
+  background: none;
+  border: none;
+  color: #3498db;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 5px 0;
+  transition: color 0.2s ease;
+  text-align: left;
+}
+
+.filter-button:hover {
+  color: #2980b9;
+}
+
+.filter-button.active {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* Estilo para o botão de limpar filtros */
+.filter-button.clear-filter {
+  color: #e74c3c;
+  border-left: 1px solid #ecf0f1;
+  padding-left: 25px;
+  margin-left: 25px;
+}
+
+.filter-button.clear-filter:hover {
+  color: #c0392b;
+}
+
+.filter-button.clear-filter.active {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+/* Tabela de consultas */
+.consultas-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 25px;
+}
+
+.consultas-table th {
+  text-align: left;
+  padding: 15px 20px;
+  font-weight: 600;
+  color: #2c3e50;
+  border-bottom: 2px solid #ecf0f1;
+  font-size: 14px;
+}
+
+.consultas-table td {
+  padding: 15px 20px;
+  border-bottom: 1px solid #f8f9fa;
+  color: #34495e;
+  font-size: 14px;
+}
+
+.consultas-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+/* Paginação */
+.pagination {
+  display: flex;
+  justify-content: flex-start; /* Alinha à esquerda */
+  align-items: center;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #ecf0f1;
+  gap: 40px; /* Espaçamento entre Previous e Next */
+}
+
+.pagination button {
+  background: none;
+  border: none;
+  color: #95a5a6; /* Cor cinza clara como na imagem */
+  font-size: 14px;
+  font-weight: 300; /* Fonte mais leve */
+  cursor: pointer;
+  padding: 8px 0;
+  transition: color 0.2s ease;
+  font-family: sans-serif; /* Fonte sans-serif como na imagem */
+}
+
+.pagination button:hover {
+  color: #7f8c8d;
+}
+
+/* Estilo específico para os símbolos */
+.pagination button::before,
+.pagination button::after {
+  font-size: 12px; /* Símbolos menores que o texto */
+  color: #95a5a6;
+}
+
+/* Previous com + e - */
+.pagination button:first-child::before {
+  content: "+";
+  margin-right: 2px;
+}
+
+.pagination button:first-child::after {
+  content: "-";
+  margin-left: 2px;
+}
+
+/* Next com - e * */
+.pagination button:last-child::before {
+  content: "-";
+  margin-right: 2px;
+}
+
+.pagination button:last-child::after {
+  content: "*";
+  margin-left: 2px;
+}
+
+/* Status do backend */
+.status-backend {
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.status-backend.online {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.status-backend.offline {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.status-backend.checking {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+/* Mensagens */
+.message {
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.message.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.message.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.message.info {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .checkin-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .filters-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .filter-buttons {
+    gap: 15px;
+  }
+  
+  .card-content {
+    padding: 20px;
+  }
+  
+  .container {
+    padding: 15px;
+  }
+}
+
+/* Animações suaves */
+.main-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.main-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Regra final para a label da pessoa */
+.pessoa-field label {
+  font-size: 9px !important;
+  line-height: 1 !important;
+  height: 9px !important;
+  min-height: 9px !important;
+  max-height: 9px !important;
+  margin-bottom: 4px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Estilo para campos obrigatórios */
+.form-field.required label::after {
+  content: " *";
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+/* Estilo para campos com erro */
+.form-field.error input,
+.form-field.error select {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}
+
+/* Estilo para campos válidos */
+.form-field.valid input,
+.form-field.valid select {
+  border-color: #27ae60;
+  box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+}
