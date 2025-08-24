@@ -52,19 +52,22 @@ public class PessoaService {
         if (pessoaExistente.isPresent()) {
             Pessoa pessoa = pessoaExistente.get();
             
-            if (!pessoa.getDocumento().equals(pessoaAtualizada.getDocumento()) &&
+            // Verificar se o novo documento já existe em OUTRA pessoa
+            if (!documento.equals(pessoaAtualizada.getDocumento()) &&
                 pessoaRepository.existsByDocumento(pessoaAtualizada.getDocumento())) {
                 throw new RuntimeException("Documento " + pessoaAtualizada.getDocumento() + " já existe");
             }
             
+            // Verificar se o novo telefone já existe em OUTRA pessoa
             if (!pessoa.getTelefone().equals(pessoaAtualizada.getTelefone()) &&
                 pessoaRepository.existsByTelefone(pessoaAtualizada.getTelefone())) {
                 throw new RuntimeException("Telefone " + pessoaAtualizada.getTelefone() + " já existe");
             }
             
+            // Atualizar os campos da pessoa existente
             pessoa.setNome(pessoaAtualizada.getNome());
-            pessoa.setDocumento(pessoaAtualizada.getDocumento());
             pessoa.setTelefone(pessoaAtualizada.getTelefone());
+            // Não alterar o documento pois é a chave de busca
             
             return pessoaRepository.save(pessoa);
         } else {

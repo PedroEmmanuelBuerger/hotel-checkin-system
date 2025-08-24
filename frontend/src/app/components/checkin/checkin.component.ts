@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { PessoaPopupComponent } from '../pessoa-popup/pessoa-popup.component';
+import { GerenciarPessoasPopupComponent } from '../gerenciar-pessoas-popup/gerenciar-pessoas-popup.component';
 
 interface Pessoa {
   nome: string;
@@ -19,7 +21,7 @@ interface Checkin {
 @Component({
   selector: 'app-checkin',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PessoaPopupComponent, GerenciarPessoasPopupComponent],
   templateUrl: './checkin.component.html',
   styleUrls: ['./checkin.component.scss']
 })
@@ -41,6 +43,9 @@ export class CheckinComponent implements OnInit {
   filtroAtivo = 'todos';
   filtroDocumento = '';
   filtroNome = '';
+  
+  mostrarPopupPessoa = false;
+  mostrarPopupGerenciar = false;
 
   constructor(private http: HttpClient) { }
 
@@ -48,6 +53,42 @@ export class CheckinComponent implements OnInit {
     this.listarPessoas();
     this.listarCheckins();
     this.verificarStatusBackend();
+  }
+
+  abrirPopupPessoa() {
+    this.mostrarPopupPessoa = true;
+  }
+
+  fecharPopupPessoa() {
+    this.mostrarPopupPessoa = false;
+  }
+
+  abrirPopupGerenciar() {
+    this.mostrarPopupGerenciar = true;
+  }
+
+  fecharPopupGerenciar() {
+    this.mostrarPopupGerenciar = false;
+  }
+
+  onPessoaCriada(pessoa: Pessoa) {
+    this.listarPessoas();
+    this.mostrarMensagem('Pessoa criada com sucesso! Agora você pode selecioná-la para o check-in.', 'success');
+  }
+
+  onPessoaAtualizada(pessoa: Pessoa) {
+    this.listarPessoas();
+    this.mostrarMensagem('Pessoa atualizada com sucesso!', 'success');
+  }
+
+  onPessoaExcluida(documento: string) {
+    this.listarPessoas();
+    this.mostrarMensagem('Pessoa excluída com sucesso!', 'success');
+    
+    // Se a pessoa excluída estava selecionada no checkin, limpar a seleção
+    if (this.checkin.pessoa.documento === documento) {
+      this.checkin.pessoa = { nome: '', documento: '', telefone: '' };
+    }
   }
 
   listarPessoas() {

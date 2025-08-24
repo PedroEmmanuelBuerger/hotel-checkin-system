@@ -18,6 +18,30 @@
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Área de Gerenciamento de Pessoas -->
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-xl font-semibold mb-4 text-blue-600">Gerenciamento de Pessoas</h2>
+      
+      <div class="space-y-4">
+        <div class="flex gap-3">
+          <button 
+            type="button"
+            (click)="abrirPopupPessoa()"
+            class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            + Incluir Pessoa
+          </button>
+          <button 
+            type="button"
+            (click)="abrirPopupGerenciar()"
+            class="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            Gerenciar Pessoas
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="bg-white p-6 rounded-lg shadow">
       <h2 class="text-xl font-semibold mb-4 text-blue-600">Novo check in</h2>
       
@@ -175,4 +199,19 @@
       </div>
     </div>
   </div>
+
+  <!-- Popup para incluir nova pessoa -->
+  <app-pessoa-popup 
+    *ngIf="mostrarPopupPessoa"
+    (pessoaCriada)="onPessoaCriada($event)"
+    (fechado)="fecharPopupPessoa()"
+  ></app-pessoa-popup>
+
+  <!-- Popup para gerenciar pessoas -->
+  <app-gerenciar-pessoas-popup 
+    *ngIf="mostrarPopupGerenciar"
+    (pessoaAtualizada)="onPessoaAtualizada($event)"
+    (pessoaExcluida)="onPessoaExcluida($event)"
+    (fechado)="fecharPopupGerenciar()"
+  ></app-gerenciar-pessoas-popup>
 </div> 
