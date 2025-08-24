@@ -1,8 +1,10 @@
 import { Routes } from '@angular/router';
 import { PessoaComponent } from './components/pessoa/pessoa.component';
+import { CheckinComponent } from './components/checkin/checkin.component';
 
 export const routes: Routes = [
-  { path: '', redirectTo: '/pessoas', pathMatch: 'full' },
+  { path: '', component: CheckinComponent },
   { path: 'pessoas', component: PessoaComponent },
-  { path: '**', redirectTo: '/pessoas' }
+  { path: 'checkin', component: CheckinComponent },
+  { path: '**', redirectTo: '' }
 ];

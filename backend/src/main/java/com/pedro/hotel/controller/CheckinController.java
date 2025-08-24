@@ -122,6 +122,34 @@ public class CheckinController {
             return ResponseEntity.badRequest().body(erro);
         }
     }
+
+    @GetMapping("/presentes")
+    public ResponseEntity<List<Checkin>> buscarCheckinsPresentes() {
+        List<Checkin> checkins = checkinService.buscarCheckinsPresentes();
+        return ResponseEntity.ok(checkins);
+    }
+
+    @GetMapping("/saidos")
+    public ResponseEntity<List<Checkin>> buscarCheckinsQueSairam() {
+        List<Checkin> checkins = checkinService.buscarCheckinsQueSairam();
+        return ResponseEntity.ok(checkins);
+    }
+
+    @GetMapping("/valor-gasto/{id}")
+    public ResponseEntity<Map<String, Object>> calcularValorGasto(@PathVariable String id) {
+        try {
+            Checkin checkin = checkinService.buscarPorId(id);
+            double valorGasto = checkinService.calcularValorGasto(checkin);
+            Map<String, Object> resultado = new HashMap<>();
+            resultado.put("valorGasto", valorGasto);
+            resultado.put("checkin", checkin);
+            return ResponseEntity.ok(resultado);
+        } catch (RuntimeException e) {
+            Map<String, Object> erro = new HashMap<>();
+            erro.put("erro", e.getMessage());
+            return ResponseEntity.badRequest().body(erro);
+        }
+    }
     
     @GetMapping("/health")
     public ResponseEntity<Map<String, String>> health() {

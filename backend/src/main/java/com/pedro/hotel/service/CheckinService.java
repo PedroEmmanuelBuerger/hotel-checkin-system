@@ -48,10 +48,6 @@ public class CheckinService {
             throw new RuntimeException("Data de entrada não pode ser posterior à data de saída");
         }
         
-        if (checkin.getDataEntrada().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Data de entrada não pode ser no passado");
-        }
-        
         if (ChronoUnit.DAYS.between(checkin.getDataEntrada(), checkin.getDataSaida()) > 30) {
             throw new RuntimeException("Estadia máxima permitida é de 30 dias");
         }
@@ -143,21 +139,68 @@ public class CheckinService {
         if (inicio == null || fim == null) {
             throw new RuntimeException("Datas de início e fim são obrigatórias");
         }
-        
-        List<Checkin> checkinsNoPeriodo = buscarCheckinsPorPeriodo(inicio, fim);
-        long diasPeriodo = ChronoUnit.DAYS.between(inicio, fim);
-        
-        if (diasPeriodo == 0) return 0.0;
-        
-        long totalDiasOcupacao = checkinsNoPeriodo.stream()
+
+        if (inicio.isAfter(fim)) {
+            throw new RuntimeException("Data de início não pode ser posterior à data de fim");
+        }
+
+        List<Checkin> todosCheckins = checkinRepository.findAll();
+        long diasTotaisPeriodo = ChronoUnit.DAYS.between(inicio.toLocalDate(), fim.toLocalDate());
+        if (diasTotaisPeriodo == 0) diasTotaisPeriodo = 1;
+
+        long diasOcupados = todosCheckins.stream()
                 .mapToLong(checkin -> {
-                    LocalDateTime entrada = checkin.getDataEntrada().isBefore(inicio) ? inicio : checkin.getDataEntrada();
-                    LocalDateTime saida = checkin.getDataSaida().isAfter(fim) ? fim : checkin.getDataSaida();
-                    return ChronoUnit.DAYS.between(entrada, saida);
+                    LocalDateTime checkinInicio = checkin.getDataEntrada();
+                    LocalDateTime checkinFim = checkin.getDataSaida();
+
+                    LocalDateTime intersecaoInicio = checkinInicio.isAfter(inicio) ? checkinInicio : inicio;
+                    LocalDateTime intersecaoFim = checkinFim.isBefore(fim) ? checkinFim : fim;
+
+                    if (intersecaoInicio.isBefore(intersecaoFim)) {
+                        return ChronoUnit.DAYS.between(intersecaoInicio.toLocalDate(), intersecaoFim.toLocalDate());
+                    }
+                    return 0;
                 })
                 .sum();
+
+        return (double) diasOcupados / diasTotaisPeriodo;
+    }
+
+    public List<Checkin> buscarCheckinsPresentes() {
+        LocalDateTime agora = LocalDateTime.now();
+        return checkinRepository.findAll().stream()
+                .filter(checkin -> checkin.getDataEntrada().isBefore(agora) && 
+                                  checkin.getDataSaida().isAfter(agora))
+                .toList();
+    }
+
+    public List<Checkin> buscarCheckinsQueSairam() {
+        LocalDateTime agora = LocalDateTime.now();
+        return checkinRepository.findAll().stream()
+                .filter(checkin -> checkin.getDataSaida().isBefore(agora))
+                .toList();
+    }
+
+    public double calcularValorGasto(Checkin checkin) {
+        long diasEstadia = ChronoUnit.DAYS.between(
+            checkin.getDataEntrada().toLocalDate(), 
+            checkin.getDataSaida().toLocalDate()
+        );
+        if (diasEstadia == 0) diasEstadia = 1;
+
+        double tarifaDiaria = 150.0;
+        double valorBase = diasEstadia * tarifaDiaria;
         
-        return (double) totalDiasOcupacao / diasPeriodo;
+        if (checkin.isAdicionalVeiculo()) {
+            valorBase += 50.0 * diasEstadia;
+        }
+        
+        return valorBase;
+    }
+
+    public Checkin buscarPorId(String id) {
+        return checkinRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Check-in não encontrado com o ID: " + id));
     }
     
     public List<Checkin> buscarCheckinsVencendo(LocalDateTime dataReferencia) {

@@ -1,7 +1,6 @@
 package com.pedro.hotel.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.index.Indexed;
 
 import jakarta.validation.constraints.NotBlank;
 
@@ -12,7 +11,6 @@ public class Pessoa {
     private String nome;
     
     @NotBlank(message = "Documento é obrigatório")
-    @Indexed(unique = true)
     private String documento;
     
     @NotBlank(message = "Telefone é obrigatório")

@@ -13,13 +13,20 @@ db.createUser({
 
 db = db.getSiblingDB('hotel_checkin');
 
+// Limpar coleções existentes e índices antigos
+db.checkins.drop();
+db.pessoas.drop();
+
+// Recriar coleções
 db.createCollection('checkins');
 db.createCollection('pessoas');
 
+// Criar índices para pessoas
 db.pessoas.createIndex({ "documento": 1 }, { unique: true });
 db.pessoas.createIndex({ "telefone": 1 }, { unique: true });
 db.pessoas.createIndex({ "nome": 1 });
 
+// Criar índices para checkins
 db.checkins.createIndex({ "pessoa.documento": 1 });
 db.checkins.createIndex({ "pessoa.nome": 1 });
 db.checkins.createIndex({ "dataEntrada": 1 });
