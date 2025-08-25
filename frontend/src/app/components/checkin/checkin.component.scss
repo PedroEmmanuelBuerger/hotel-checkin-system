@@ -97,7 +97,7 @@ h1 {
 /* Linha pessoa + veículo */
 .pessoa-veiculo-row {
   display: flex; /* Mudado para flexbox para melhor controle */
-  gap: 20px;
+  gap: 20px; /* Restaurado para o valor original */
   align-items: flex-end; /* Alinha na parte inferior */
   margin-bottom: 20px;
 }
@@ -170,6 +170,8 @@ h1 {
 /* Nova classe específica para o campo pessoa */
 .pessoa-input-field {
   margin-bottom: 12px;
+  width: auto; /* Permite que o campo se ajuste ao conteúdo */
+  flex: none; /* Remove o flex: 1 que estava ocupando todo o espaço */
 }
 
 .pessoa-input-field label {
@@ -181,72 +183,25 @@ h1 {
   line-height: 1.2;
 }
 
+
+
+.pessoa-input-field {
+  position: relative !important;
+}
+
+.pessoa-input-field .search-container {
+  width: 287% !important; /* Usa toda a largura disponível */
+}
+
+
+
 .pessoa-input-field .search-container input {
-  width: 100% !important;
   height: 36px !important; /* Mesma altura dos outros campos */
   padding: 8px 10px !important; /* Mesmo padding dos outros campos */
   font-size: 14px !important; /* Mesma fonte dos outros campos */
-  border: 1px solid #ddd !important;
-  border-radius: 6px !important;
-  background-color: white !important;
-  box-sizing: border-box !important;
-  transition: border-color 0.2s ease;
-  min-height: 36px !important;
-  max-height: 36px !important;
-  line-height: 36px !important;
-}
-
-/* Força o container de busca a ter a mesma largura dos outros campos */
-.pessoa-input-field .search-container {
-  width: 100% !important;
-  min-width: 100% !important;
-  max-width: 100% !important;
-  flex: 1 !important;
-}
-
-/* Ajusta o layout para dar mais espaço ao campo de busca */
-.pessoa-input-field .input-checkbox-row {
-  gap: 10px !important; /* Reduz ainda mais o gap */
-}
-
-.pessoa-input-field .checkbox-field {
-  flex-shrink: 0 !important;
-  min-width: auto !important;
-  width: auto !important;
 }
 
 
-
-/* Nova estrutura para input e checkbox na mesma linha */
-.input-checkbox-row {
-  display: flex;
-  align-items: flex-end;
-  gap: 20px;
-}
-
-.input-checkbox-row .search-container {
-  flex: 1;
-}
-
-
-
-
-
-.input-checkbox-row .checkbox-field {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  flex-shrink: 0;
-}
-
-.input-checkbox-row .checkbox-field input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
-  margin: 0;
-  cursor: pointer;
-}
 
 .input-checkbox-row .checkbox-field label {
   font-size: 14px;
@@ -374,14 +329,14 @@ h1 {
   font-size: 13px;
 }
 
-/* Checkbox personalizado */
+
 .checkbox-field {
-  flex-shrink: 0;
-  margin-bottom: 0;
-  padding-top: 0;
+  position: absolute !important;
+  left: 580px !important;
+  top: 30px !important;
   display: flex;
   align-items: center;
-  gap: 6px; /* Reduzido o gap para ficar proporcional */
+  gap: 8px;
 }
 
 .checkbox-field input[type="checkbox"] {

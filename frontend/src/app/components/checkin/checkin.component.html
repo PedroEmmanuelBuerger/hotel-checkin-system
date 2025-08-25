@@ -55,35 +55,34 @@
       <div class="pessoa-veiculo-row">
         <div class="form-field required pessoa-input-field">
           <label>Pessoa</label>
-          <div class="input-checkbox-row">
-            <div class="search-container">
-              <input 
-                type="text"
-                [(ngModel)]="buscaPessoa"
-                (input)="buscarPessoas($event)"
-                (focus)="mostrarSugestoes = true"
-                (blur)="onBlurBusca()"
-                placeholder="Digite o nome ou documento da pessoa"
-                required
+          <div class="search-container">
+            <input 
+              type="text"
+              [(ngModel)]="buscaPessoa"
+              (input)="buscarPessoas($event)"
+              (focus)="mostrarSugestoes = true"
+              (blur)="onBlurBusca()"
+              placeholder="Digite o nome ou documento da pessoa"
+              required
+            >
+            <div class="sugestoes-container" *ngIf="mostrarSugestoes && sugestoesPessoas.length > 0">
+              <div 
+                *ngFor="let pessoa of sugestoesPessoas" 
+                class="sugestao-item"
+                (click)="selecionarPessoa(pessoa)"
               >
-              <div class="sugestoes-container" *ngIf="mostrarSugestoes && sugestoesPessoas.length > 0">
-                <div 
-                  *ngFor="let pessoa of sugestoesPessoas" 
-                  class="sugestao-item"
-                  (click)="selecionarPessoa(pessoa)"
-                >
-                  {{ pessoa.nome }} - {{ pessoa.documento }}
-                </div>
+                {{ pessoa.nome }} - {{ pessoa.documento }}
               </div>
             </div>
-            <div class="checkbox-field">
-              <input 
-                type="checkbox" 
-                [(ngModel)]="checkin.adicionalVeiculo"
-                id="veiculo"
-              >
-              <label for="veiculo">Possui veículo</label>
-            </div>
+          </div>
+          
+          <div class="checkbox-field">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="checkin.adicionalVeiculo"
+              id="veiculo"
+            >
+            <label for="veiculo">Possui veículo</label>
           </div>
         </div>
       </div>
