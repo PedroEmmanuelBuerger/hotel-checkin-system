@@ -181,6 +181,13 @@ public class CheckinService {
                 .toList();
     }
 
+    public List<Checkin> buscarCheckinsReservaFutura() {
+        LocalDateTime agora = LocalDateTime.now();
+        return checkinRepository.findAll().stream()
+                .filter(checkin -> checkin.getDataEntrada().isAfter(agora))
+                .toList();
+    }
+
     public double calcularValorGasto(Checkin checkin) {
         double valorTotal = 0.0;
         

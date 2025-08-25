@@ -106,20 +106,27 @@
       <div class="filters-section">
         <span class="filters-label">Filtrar por:</span>
         <div class="filter-buttons">
-          <button
-            (click)="buscarCheckinsPresentes()"
-            class="filter-button"
-            [ngClass]="{'active': filtroAtivo === 'presentes'}"
-          >
-            Pessoas ainda presentes
-          </button>
-          <button
-            (click)="buscarCheckinsSaidos()"
-            class="filter-button"
-            [ngClass]="{'active': filtroAtivo === 'saidos'}"
-          >
-            Pessoas que já deixaram o hotel
-          </button>
+                  <button
+          (click)="buscarCheckinsPresentes()"
+          class="filter-button"
+          [ngClass]="{'active': filtroAtivo === 'presentes'}"
+        >
+          Pessoas ainda presentes
+        </button>
+        <button
+          (click)="buscarCheckinsSaidos()"
+          class="filter-button"
+          [ngClass]="{'active': filtroAtivo === 'saidos'}"
+        >
+          Pessoas que já deixaram o hotel
+        </button>
+        <button
+          (click)="buscarCheckinsReservaFutura()"
+          class="filter-button"
+          [ngClass]="{'active': filtroAtivo === 'reservaFutura'}"
+        >
+          Pessoas com reserva futura
+        </button>
           <button
             (click)="limparFiltros()"
             class="filter-button clear-filter"
@@ -140,7 +147,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let checkin of checkins">
+            <tr *ngFor="let checkin of checkinsDaPagina">
               <td>{{ checkin.pessoa?.nome }}</td>
               <td>{{ checkin.pessoa?.documento }}</td>
               <td>{{ checkin.valorGasto | currency:'BRL' }}</td>
@@ -151,8 +158,19 @@
 
       <!-- Paginação -->
       <div class="pagination">
-        <button>← Previous</button>
-        <button>Next →</button>
+        <button 
+          (click)="paginaAnterior()" 
+          [disabled]="!temPaginaAnterior"
+        >
+          ← Previous
+        </button>
+        
+        <button 
+          (click)="proximaPagina()" 
+          [disabled]="!temProximaPagina"
+        >
+          Next →
+        </button>
       </div>
     </div>
   </div>

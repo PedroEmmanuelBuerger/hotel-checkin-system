@@ -493,6 +493,12 @@ h1 {
   color: #7f8c8d;
 }
 
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: #bdc3c7;
+}
+
 /* Estilo específico para os símbolos */
 .pagination button::before,
 .pagination button::after {

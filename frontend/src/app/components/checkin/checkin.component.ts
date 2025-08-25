@@ -35,6 +35,7 @@ export class CheckinComponent implements OnInit {
   };
   
   checkins: Checkin[] = [];
+  checkinsFiltrados: Checkin[] = []; // NOVA: Check-ins após aplicar filtros
   pessoas: Pessoa[] = [];
   mensagem: string = '';
   mensagemTipo: 'success' | 'error' | 'info' = 'info';
@@ -42,7 +43,7 @@ export class CheckinComponent implements OnInit {
   mostrarPopupGerenciar = false;
   filtroAtivo: string = 'todos';
   paginaAtual = 1;
-  itensPorPagina = 10;
+  itensPorPagina = 5; // Mudando para 5 itens por página
   totalCheckins = 0;
   statusBackend = 'Verificando...';
   
@@ -57,7 +58,6 @@ export class CheckinComponent implements OnInit {
   constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
-    console.log('COMPONENTE CHECKIN INICIALIZADO!');
     this.listarPessoas();
     this.listarCheckins();
     this.verificarStatusBackend();
@@ -153,14 +153,6 @@ export class CheckinComponent implements OnInit {
       return;
     }
 
-    // Debug: mostrar as datas antes de enviar
-    console.log('=== DEBUG DATAS ===');
-    console.log('Data Entrada (string):', this.checkin.dataEntrada);
-    console.log('Data Saída (string):', this.checkin.dataSaida);
-    console.log('Data Entrada (Date):', new Date(this.checkin.dataEntrada));
-    console.log('Data Saída (Date):', new Date(this.checkin.dataSaida));
-    console.log('=== FIM DEBUG ===');
-
     // Corrigir timezone: converter para horário local
     const dataEntradaLocal = new Date(this.checkin.dataEntrada);
     const dataSaidaLocal = new Date(this.checkin.dataSaida);
@@ -169,17 +161,11 @@ export class CheckinComponent implements OnInit {
     const offset = dataEntradaLocal.getTimezoneOffset() * 60000;
     const dataEntradaAjustada = new Date(dataEntradaLocal.getTime() - offset);
     const dataSaidaAjustada = new Date(dataSaidaLocal.getTime() - offset);
-    
-    console.log('=== DEBUG TIMEZONE ===');
-    console.log('Offset em minutos:', dataEntradaLocal.getTimezoneOffset());
-    console.log('Data Entrada Ajustada:', dataEntradaAjustada);
-    console.log('Data Saída Ajustada:', dataSaidaAjustada);
-    console.log('=== FIM DEBUG TIMEZONE ===');
 
     const checkinParaCriar = {
       ...this.checkin,
-      dataEntrada: dataEntradaAjustada.toISOString(),
-      dataSaida: dataSaidaAjustada.toISOString(),
+      dataEntrada: dataEntradaAjustada.toISOString().slice(0, 19), // Remove .000Z
+      dataSaida: dataSaidaAjustada.toISOString().slice(0, 19), // Remove .000Z
       pessoa: {
         documento: this.checkin.pessoa.documento,
         nome: this.checkin.pessoa.nome,
@@ -207,6 +193,7 @@ export class CheckinComponent implements OnInit {
           ...checkin,
           valorGasto: this.calcularValorGasto(checkin)
         }));
+        this.checkinsFiltrados = [...this.checkins]; // Inicializa filtrados com todos
         this.contarCheckins();
       },
       error: (error) => {
@@ -218,9 +205,10 @@ export class CheckinComponent implements OnInit {
 
   buscarPorDocumento() {
     if (this.filtroDocumento.trim()) {
+      this.resetarPaginacao(); // Reset paginação
       this.http.get<Checkin[]>(`/api/checkins/pessoa/documento/${this.filtroDocumento}`).subscribe({
         next: (response) => {
-          this.checkins = response.map(checkin => ({
+          this.checkinsFiltrados = response.map(checkin => ({
             ...checkin,
             valorGasto: this.calcularValorGasto(checkin)
           }));
@@ -236,9 +224,10 @@ export class CheckinComponent implements OnInit {
 
   buscarPorNome() {
     if (this.filtroNome.trim()) {
+      this.resetarPaginacao(); // Reset paginação
       this.http.get<Checkin[]>(`/api/checkins/pessoa/nome/${this.filtroNome}`).subscribe({
         next: (response) => {
-          this.checkins = response.map(checkin => ({
+          this.checkinsFiltrados = response.map(checkin => ({
             ...checkin,
             valorGasto: this.calcularValorGasto(checkin)
           }));
@@ -253,9 +242,10 @@ export class CheckinComponent implements OnInit {
   }
 
   buscarCheckinsPresentes() {
+    this.resetarPaginacao(); // Reset paginação
     this.http.get<Checkin[]>('/api/checkins/presentes').subscribe({
       next: (response) => {
-        this.checkins = response.map(checkin => ({
+        this.checkinsFiltrados = response.map(checkin => ({
           ...checkin,
           valorGasto: this.calcularValorGasto(checkin)
         }));
@@ -269,9 +259,10 @@ export class CheckinComponent implements OnInit {
   }
 
   buscarCheckinsSaidos() {
+    this.resetarPaginacao(); // Reset paginação
     this.http.get<Checkin[]>('/api/checkins/saidos').subscribe({
       next: (response) => {
-        this.checkins = response.map(checkin => ({
+        this.checkinsFiltrados = response.map(checkin => ({
           ...checkin,
           valorGasto: this.calcularValorGasto(checkin)
         }));
@@ -284,11 +275,71 @@ export class CheckinComponent implements OnInit {
     });
   }
 
+  buscarCheckinsReservaFutura() {
+    this.resetarPaginacao(); // Reset paginação
+    this.http.get<Checkin[]>('/api/checkins/reserva-futura').subscribe({
+      next: (response) => {
+        this.checkinsFiltrados = response.map(checkin => ({
+          ...checkin,
+          valorGasto: this.calcularValorGasto(checkin)
+        }));
+        this.filtroAtivo = 'reservaFutura';
+      },
+      error: (error) => {
+        this.mostrarMensagem('Erro ao buscar check-ins com reserva futura.', 'error');
+        console.error('Erro ao buscar check-ins com reserva futura:', error);
+      }
+    });
+  }
+
+  // Métodos de paginação
+  get checkinsDaPagina(): Checkin[] {
+    const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
+    const fim = inicio + this.itensPorPagina;
+    return this.checkinsFiltrados.slice(inicio, fim);
+  }
+
+  get totalPaginas(): number {
+    return Math.ceil(this.checkinsFiltrados.length / this.itensPorPagina);
+  }
+
+  get temPaginaAnterior(): boolean {
+    return this.paginaAtual > 1;
+  }
+
+  get temProximaPagina(): boolean {
+    return this.paginaAtual < this.totalPaginas;
+  }
+
+  paginaAnterior(): void {
+    if (this.temPaginaAnterior) {
+      this.paginaAtual--;
+    }
+  }
+
+  proximaPagina(): void {
+    if (this.temProximaPagina) {
+      this.paginaAtual++;
+    }
+  }
+
+  irParaPagina(pagina: number): void {
+    if (pagina >= 1 && pagina <= this.totalPaginas) {
+      this.paginaAtual = pagina;
+    }
+  }
+
+  // CORREÇÃO: Resetar paginação ao aplicar filtros
+  resetarPaginacao(): void {
+    this.paginaAtual = 1;
+  }
+
   limparFiltros() {
+    this.filtroAtivo = 'todos';
     this.filtroDocumento = '';
     this.filtroNome = '';
-    this.filtroAtivo = 'todos';
-    this.listarCheckins();
+    this.resetarPaginacao(); // Reset paginação
+    this.checkinsFiltrados = [...this.checkins]; // Restaura todos os check-ins
     this.mostrarMensagem('Filtros removidos. Mostrando todos os check-ins.', 'info');
   }
 
@@ -356,19 +407,8 @@ export class CheckinComponent implements OnInit {
   }
 
   calcularValorGasto(checkin: Checkin): number {
-    console.log('=== CALCULANDO VALOR GASTO ===');
-    console.log('Pessoa:', checkin.pessoa.nome);
-    
     const dataEntrada = new Date(checkin.dataEntrada);
     const dataSaida = new Date(checkin.dataSaida);
-    
-    console.log('Data Entrada (string):', checkin.dataEntrada);
-    console.log('Data Entrada (Date):', dataEntrada);
-    console.log('Data Entrada (getDay):', dataEntrada.getDay());
-    console.log('Data Saída (string):', checkin.dataSaida);
-    console.log('Data Saída (Date):', dataSaida);
-    console.log('Data Saída (getDay):', dataSaida.getDay());
-    console.log('Adicional Veículo:', checkin.adicionalVeiculo);
     
     let valorTotal = 0;
     
@@ -376,9 +416,6 @@ export class CheckinComponent implements OnInit {
     let dataAtual = new Date(dataEntrada);
     // CORREÇÃO: Parar na data de saída (exclusiva)
     const dataSaidaDate = new Date(dataSaida);
-    
-    console.log('Data Atual (início):', dataAtual);
-    console.log('Data Saída (início):', dataSaidaDate);
     
     // CORREÇÃO: Loop apenas pelas noites (entrada inclusiva, saída exclusiva)
     while (dataAtual < dataSaidaDate) {
@@ -395,12 +432,6 @@ export class CheckinComponent implements OnInit {
       const totalDia = tarifaDiaria + taxaGaragem;
       valorTotal += totalDia;
       
-      console.log(`Dia: ${dataAtual.toDateString()}`);
-      console.log(`Fim de semana: ${isFimDeSemana}`);
-      console.log(`Tarifa: ${tarifaDiaria}`);
-      console.log(`Garagem: ${taxaGaragem}`);
-      console.log(`Total parcial: ${valorTotal}`);
-      
       // Avançar para o próximo dia
       dataAtual.setDate(dataAtual.getDate() + 1);
     }
@@ -410,11 +441,6 @@ export class CheckinComponent implements OnInit {
     const minutoSaida = dataSaida.getMinutes();
     const horaSaidaMinutos = horaSaida * 60 + minutoSaida;
     const hora1630Minutos = 16 * 60 + 30; // 16:30 em minutos
-    
-    console.log('Hora saída:', `${horaSaida}:${minutoSaida}`);
-    console.log('Hora saída em minutos:', horaSaidaMinutos);
-    console.log('Hora 16:30 em minutos:', hora1630Minutos);
-    console.log('Hora saída > 16:30?', horaSaidaMinutos > hora1630Minutos);
     
     if (horaSaidaMinutos > hora1630Minutos) {
       const diaSemanaSaida = dataSaida.getDay();
@@ -428,10 +454,8 @@ export class CheckinComponent implements OnInit {
       }
       
       valorTotal += tarifaDiariaExtra + taxaGaragemExtra;
-      console.log('Aplicando diária extra (após 16:30):', tarifaDiariaExtra + taxaGaragemExtra);
     }
     
-    console.log('VALOR TOTAL FINAL:', valorTotal);
     return valorTotal;
   }
 

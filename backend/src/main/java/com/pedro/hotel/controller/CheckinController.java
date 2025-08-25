@@ -135,6 +135,12 @@ public class CheckinController {
         return ResponseEntity.ok(checkins);
     }
 
+    @GetMapping("/reserva-futura")
+    public ResponseEntity<List<Checkin>> buscarCheckinsReservaFutura() {
+        List<Checkin> checkins = checkinService.buscarCheckinsReservaFutura();
+        return ResponseEntity.ok(checkins);
+    }
+
     @GetMapping("/valor-gasto/{id}")
     public ResponseEntity<Map<String, Object>> calcularValorGasto(@PathVariable String id) {
         try {
