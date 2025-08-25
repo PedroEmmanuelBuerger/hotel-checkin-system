@@ -1,6 +1,7 @@
 package com.pedro.hotel.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -12,9 +13,11 @@ public class Checkin {
     private Pessoa pessoa;
     
     @NotNull(message = "Data de entrada é obrigatória")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dataEntrada;
     
     @NotNull(message = "Data de saída é obrigatória")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dataSaida;
     
     private boolean adicionalVeiculo;

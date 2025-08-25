@@ -57,6 +57,7 @@ export class CheckinComponent implements OnInit {
   constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
+    console.log('COMPONENTE CHECKIN INICIALIZADO!');
     this.listarPessoas();
     this.listarCheckins();
     this.verificarStatusBackend();
@@ -152,8 +153,33 @@ export class CheckinComponent implements OnInit {
       return;
     }
 
+    // Debug: mostrar as datas antes de enviar
+    console.log('=== DEBUG DATAS ===');
+    console.log('Data Entrada (string):', this.checkin.dataEntrada);
+    console.log('Data Saída (string):', this.checkin.dataSaida);
+    console.log('Data Entrada (Date):', new Date(this.checkin.dataEntrada));
+    console.log('Data Saída (Date):', new Date(this.checkin.dataSaida));
+    console.log('=== FIM DEBUG ===');
+
+    // Corrigir timezone: converter para horário local
+    const dataEntradaLocal = new Date(this.checkin.dataEntrada);
+    const dataSaidaLocal = new Date(this.checkin.dataSaida);
+    
+    // CORREÇÃO: Ajustar para o timezone local (subtrair o offset)
+    const offset = dataEntradaLocal.getTimezoneOffset() * 60000;
+    const dataEntradaAjustada = new Date(dataEntradaLocal.getTime() - offset);
+    const dataSaidaAjustada = new Date(dataSaidaLocal.getTime() - offset);
+    
+    console.log('=== DEBUG TIMEZONE ===');
+    console.log('Offset em minutos:', dataEntradaLocal.getTimezoneOffset());
+    console.log('Data Entrada Ajustada:', dataEntradaAjustada);
+    console.log('Data Saída Ajustada:', dataSaidaAjustada);
+    console.log('=== FIM DEBUG TIMEZONE ===');
+
     const checkinParaCriar = {
       ...this.checkin,
+      dataEntrada: dataEntradaAjustada.toISOString(),
+      dataSaida: dataSaidaAjustada.toISOString(),
       pessoa: {
         documento: this.checkin.pessoa.documento,
         nome: this.checkin.pessoa.nome,
@@ -330,20 +356,83 @@ export class CheckinComponent implements OnInit {
   }
 
   calcularValorGasto(checkin: Checkin): number {
+    console.log('=== CALCULANDO VALOR GASTO ===');
+    console.log('Pessoa:', checkin.pessoa.nome);
+    
     const dataEntrada = new Date(checkin.dataEntrada);
     const dataSaida = new Date(checkin.dataSaida);
-    const diffTime = Math.abs(dataSaida.getTime() - dataEntrada.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    const diasEstadia = diffDays === 0 ? 1 : diffDays;
     
-    const tarifaDiaria = 150.0;
-    let valorBase = diasEstadia * tarifaDiaria;
+    console.log('Data Entrada (string):', checkin.dataEntrada);
+    console.log('Data Entrada (Date):', dataEntrada);
+    console.log('Data Entrada (getDay):', dataEntrada.getDay());
+    console.log('Data Saída (string):', checkin.dataSaida);
+    console.log('Data Saída (Date):', dataSaida);
+    console.log('Data Saída (getDay):', dataSaida.getDay());
+    console.log('Adicional Veículo:', checkin.adicionalVeiculo);
     
-    if (checkin.adicionalVeiculo) {
-      valorBase += 50.0 * diasEstadia;
+    let valorTotal = 0;
+    
+    // CORREÇÃO: Inicializar com a data de entrada (inclusiva)
+    let dataAtual = new Date(dataEntrada);
+    // CORREÇÃO: Parar na data de saída (exclusiva)
+    const dataSaidaDate = new Date(dataSaida);
+    
+    console.log('Data Atual (início):', dataAtual);
+    console.log('Data Saída (início):', dataSaidaDate);
+    
+    // CORREÇÃO: Loop apenas pelas noites (entrada inclusiva, saída exclusiva)
+    while (dataAtual < dataSaidaDate) {
+      const diaSemana = dataAtual.getDay();
+      const isFimDeSemana = diaSemana === 0 || diaSemana === 6; // 0 = domingo, 6 = sábado
+      
+      const tarifaDiaria = isFimDeSemana ? 150 : 120;
+      let taxaGaragem = 0;
+      
+      if (checkin.adicionalVeiculo) {
+        taxaGaragem = isFimDeSemana ? 20 : 15;
+      }
+      
+      const totalDia = tarifaDiaria + taxaGaragem;
+      valorTotal += totalDia;
+      
+      console.log(`Dia: ${dataAtual.toDateString()}`);
+      console.log(`Fim de semana: ${isFimDeSemana}`);
+      console.log(`Tarifa: ${tarifaDiaria}`);
+      console.log(`Garagem: ${taxaGaragem}`);
+      console.log(`Total parcial: ${valorTotal}`);
+      
+      // Avançar para o próximo dia
+      dataAtual.setDate(dataAtual.getDate() + 1);
     }
     
-    return valorBase;
+    // Regra das 16:30 - só cobra se sair após 16:30
+    const horaSaida = dataSaida.getHours();
+    const minutoSaida = dataSaida.getMinutes();
+    const horaSaidaMinutos = horaSaida * 60 + minutoSaida;
+    const hora1630Minutos = 16 * 60 + 30; // 16:30 em minutos
+    
+    console.log('Hora saída:', `${horaSaida}:${minutoSaida}`);
+    console.log('Hora saída em minutos:', horaSaidaMinutos);
+    console.log('Hora 16:30 em minutos:', hora1630Minutos);
+    console.log('Hora saída > 16:30?', horaSaidaMinutos > hora1630Minutos);
+    
+    if (horaSaidaMinutos > hora1630Minutos) {
+      const diaSemanaSaida = dataSaida.getDay();
+      const isFimDeSemanaSaida = diaSemanaSaida === 0 || diaSemanaSaida === 6;
+      
+      const tarifaDiariaExtra = isFimDeSemanaSaida ? 150 : 120;
+      let taxaGaragemExtra = 0;
+      
+      if (checkin.adicionalVeiculo) {
+        taxaGaragemExtra = isFimDeSemanaSaida ? 20 : 15;
+      }
+      
+      valorTotal += tarifaDiariaExtra + taxaGaragemExtra;
+      console.log('Aplicando diária extra (após 16:30):', tarifaDiariaExtra + taxaGaragemExtra);
+    }
+    
+    console.log('VALOR TOTAL FINAL:', valorTotal);
+    return valorTotal;
   }
 
   mostrarMensagem(msg: string, tipo: 'success' | 'error' | 'info') {

@@ -182,20 +182,48 @@ public class CheckinService {
     }
 
     public double calcularValorGasto(Checkin checkin) {
-        long diasEstadia = ChronoUnit.DAYS.between(
-            checkin.getDataEntrada().toLocalDate(), 
-            checkin.getDataSaida().toLocalDate()
-        );
-        if (diasEstadia == 0) diasEstadia = 1;
-
-        double tarifaDiaria = 150.0;
-        double valorBase = diasEstadia * tarifaDiaria;
+        double valorTotal = 0.0;
         
-        if (checkin.isAdicionalVeiculo()) {
-            valorBase += 50.0 * diasEstadia;
+        // Percorre apenas as noites (dataEntrada inclusive, dataSaida exclusiva)
+        LocalDateTime dataAtual = checkin.getDataEntrada().toLocalDate().atStartOfDay();
+        LocalDateTime dataSaida = checkin.getDataSaida().toLocalDate().atStartOfDay();
+        
+        while (dataAtual.isBefore(dataSaida)) {
+            // Verifica se é fim de semana (sábado = 6, domingo = 7)
+            boolean isFimDeSemana = dataAtual.getDayOfWeek().getValue() >= 6;
+            
+            // Tarifa da diária
+            double tarifaDiaria = isFimDeSemana ? 150.0 : 120.0;
+            valorTotal += tarifaDiaria;
+            
+            // Taxa de garagem se houver veículo
+            if (checkin.isAdicionalVeiculo()) {
+                double taxaGaragem = isFimDeSemana ? 20.0 : 15.0;
+                valorTotal += taxaGaragem;
+            }
+            
+            // Avança para o próximo dia
+            dataAtual = dataAtual.plusDays(1);
         }
         
-        return valorBase;
+        // Verifica se a hora de saída é maior que 16:30
+        // Se sim, cobra +1 diária completa (inclusive garagem se houver)
+        if (checkin.getDataSaida().toLocalTime().isAfter(java.time.LocalTime.of(16, 30))) {
+            // Verifica se o dia de saída é fim de semana
+            boolean isFimDeSemanaSaida = checkin.getDataSaida().getDayOfWeek().getValue() >= 6;
+            
+            // Adiciona tarifa da diária extra
+            double tarifaDiariaExtra = isFimDeSemanaSaida ? 150.0 : 120.0;
+            valorTotal += tarifaDiariaExtra;
+            
+            // Adiciona taxa de garagem extra se houver veículo
+            if (checkin.isAdicionalVeiculo()) {
+                double taxaGaragemExtra = isFimDeSemanaSaida ? 20.0 : 15.0;
+                valorTotal += taxaGaragemExtra;
+            }
+        }
+        
+        return valorTotal;
     }
 
     public Checkin buscarPorId(String id) {
