@@ -407,8 +407,16 @@ export class CheckinComponent implements OnInit {
   }
 
   calcularValorGasto(checkin: Checkin): number {
+    console.log('=== INÍCIO DO CÁLCULO ===');
+    console.log('Check-in:', checkin);
+    
     const dataEntrada = new Date(checkin.dataEntrada);
     const dataSaida = new Date(checkin.dataSaida);
+    
+    console.log('Data Entrada (Date):', dataEntrada);
+    console.log('Data Saída (Date):', dataSaida);
+    console.log('Data Entrada (String):', checkin.dataEntrada);
+    console.log('Data Saída (String):', checkin.dataSaida);
     
     let valorTotal = 0;
     
@@ -417,8 +425,24 @@ export class CheckinComponent implements OnInit {
     // CORREÇÃO: Parar na data de saída (exclusiva)
     const dataSaidaDate = new Date(dataSaida);
     
+    console.log('Data Atual (início):', dataAtual);
+    console.log('Data Saída (limite):', dataSaidaDate);
+    console.log('Condição while:', dataAtual < dataSaidaDate);
+    
     // CORREÇÃO: Loop apenas pelas noites (entrada inclusiva, saída exclusiva)
-    while (dataAtual < dataSaidaDate) {
+    let contadorNoites = 0;
+    
+    // CORREÇÃO: Comparar apenas as datas (sem hora) para contar noites
+    const dataEntradaDate = new Date(dataEntrada.getFullYear(), dataEntrada.getMonth(), dataEntrada.getDate());
+    const dataSaidaDateOnly = new Date(dataSaida.getFullYear(), dataSaida.getMonth(), dataSaida.getDate());
+    
+    console.log('Data Entrada (só data):', dataEntradaDate);
+    console.log('Data Saída (só data):', dataSaidaDateOnly);
+    
+    dataAtual = new Date(dataEntradaDate);
+    
+    while (dataAtual < dataSaidaDateOnly) {
+      contadorNoites++;
       const diaSemana = dataAtual.getDay();
       const isFimDeSemana = diaSemana === 0 || diaSemana === 6; // 0 = domingo, 6 = sábado
       
@@ -432,15 +456,33 @@ export class CheckinComponent implements OnInit {
       const totalDia = tarifaDiaria + taxaGaragem;
       valorTotal += totalDia;
       
+      console.log(`Noite ${contadorNoites}:`, {
+        data: dataAtual.toDateString(),
+        diaSemana: dataAtual.getDay(),
+        isFimDeSemana,
+        tarifaDiaria,
+        taxaGaragem,
+        totalDia,
+        valorTotalAcumulado: valorTotal
+      });
+      
       // Avançar para o próximo dia
       dataAtual.setDate(dataAtual.getDate() + 1);
     }
+    
+    console.log('Total após noites:', valorTotal);
+    console.log('Número de noites contadas:', contadorNoites);
     
     // Regra das 16:30 - só cobra se sair após 16:30
     const horaSaida = dataSaida.getHours();
     const minutoSaida = dataSaida.getMinutes();
     const horaSaidaMinutos = horaSaida * 60 + minutoSaida;
     const hora1630Minutos = 16 * 60 + 30; // 16:30 em minutos
+    
+    console.log('Hora de saída:', `${horaSaida}:${minutoSaida}`);
+    console.log('Hora de saída em minutos:', horaSaidaMinutos);
+    console.log('Hora 16:30 em minutos:', hora1630Minutos);
+    console.log('Aplica regra 16:30?', horaSaidaMinutos > hora1630Minutos);
     
     if (horaSaidaMinutos > hora1630Minutos) {
       const diaSemanaSaida = dataSaida.getDay();
@@ -453,9 +495,21 @@ export class CheckinComponent implements OnInit {
         taxaGaragemExtra = isFimDeSemanaSaida ? 20 : 15;
       }
       
-      valorTotal += tarifaDiariaExtra + taxaGaragemExtra;
+      const totalExtra = tarifaDiariaExtra + taxaGaragemExtra;
+      valorTotal += totalExtra;
+      
+      console.log('Dia extra aplicado:', {
+        data: dataSaida.toDateString(),
+        diaSemana: diaSemanaSaida,
+        isFimDeSemana: isFimDeSemanaSaida,
+        tarifaDiariaExtra,
+        taxaGaragemExtra,
+        totalExtra,
+        valorTotalFinal: valorTotal
+      });
     }
     
+    console.log('=== VALOR FINAL:', valorTotal, '===');
     return valorTotal;
   }
 

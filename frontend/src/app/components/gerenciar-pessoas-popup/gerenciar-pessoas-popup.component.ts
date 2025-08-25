@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
 interface Pessoa {
+  id?: string;
   nome: string;
   documento: string;
   telefone: string;
@@ -55,9 +56,8 @@ interface Pessoa {
                   [(ngModel)]="pessoaEditando.documento" 
                   name="documento" 
                   required
-                  readonly
-                  class="form-input form-input-readonly"
-                  placeholder="Documento (não pode ser alterado)">
+                  class="form-input"
+                  placeholder="Digite o documento">
               </div>
               
               <div class="form-group">
@@ -513,7 +513,13 @@ export class GerenciarPessoasPopupComponent implements OnInit {
   }
 
   editarPessoa(pessoa: Pessoa) {
-    this.pessoaEditando = { ...pessoa };
+    // Preservar o ID para a atualização
+    this.pessoaEditando = { 
+      id: pessoa.id,
+      nome: pessoa.nome,
+      documento: pessoa.documento,
+      telefone: pessoa.telefone
+    };
     this.editando = true;
     this.mensagem = '';
   }
@@ -525,7 +531,12 @@ export class GerenciarPessoasPopupComponent implements OnInit {
   }
 
   salvarEdicao() {
-    this.http.put<Pessoa>(`/api/pessoas/documento/${this.pessoaEditando.documento}`, this.pessoaEditando).subscribe({
+    if (!this.pessoaEditando.id) {
+      this.mostrarMensagem('Erro: ID da pessoa não encontrado', 'error');
+      return;
+    }
+
+    this.http.put<Pessoa>(`/api/pessoas/${this.pessoaEditando.id}`, this.pessoaEditando).subscribe({
       next: (response) => {
         this.mostrarMensagem('Pessoa atualizada com sucesso!', 'success');
         this.pessoaAtualizada.emit(response);

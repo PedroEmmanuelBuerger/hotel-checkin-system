@@ -1,28 +1,43 @@
 package com.pedro.hotel.model;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.index.Indexed;
 
 import jakarta.validation.constraints.NotBlank;
 
 @Document(collection = "pessoas")
 public class Pessoa {
     
+    @Id
+    private String id;
+    
     @NotBlank(message = "Nome é obrigatório")
     private String nome;
     
     @NotBlank(message = "Documento é obrigatório")
+    @Indexed(unique = true)
     private String documento;
     
     @NotBlank(message = "Telefone é obrigatório")
+    @Indexed(unique = true)
     private String telefone;
     
-    public Pessoa() {
+        public Pessoa() {
     }
-    
+
     public Pessoa(String nome, String documento, String telefone) {
         this.nome = nome;
         this.documento = documento;
         this.telefone = telefone;
+    }
+    
+    public String getId() {
+        return id;
+    }
+    
+    public void setId(String id) {
+        this.id = id;
     }
     
     public String getNome() {

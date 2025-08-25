@@ -77,10 +77,10 @@ public class PessoaController {
         return ResponseEntity.ok(resultado);
     }
     
-    @PutMapping("/documento/{documento}")
-    public ResponseEntity<?> atualizarPessoa(@PathVariable String documento, @Valid @RequestBody Pessoa pessoa) {
+    @PutMapping("/{id}")
+    public ResponseEntity<?> atualizarPessoa(@PathVariable String id, @Valid @RequestBody Pessoa pessoa) {
         try {
-            Pessoa pessoaAtualizada = pessoaService.atualizarPessoa(documento, pessoa);
+            Pessoa pessoaAtualizada = pessoaService.atualizarPessoaPorId(id, pessoa);
             return ResponseEntity.ok(pessoaAtualizada);
         } catch (RuntimeException e) {
             Map<String, String> erro = new HashMap<>();

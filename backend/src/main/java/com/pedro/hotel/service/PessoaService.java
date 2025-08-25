@@ -69,9 +69,39 @@ public class PessoaService {
             pessoa.setTelefone(pessoaAtualizada.getTelefone());
             // Não alterar o documento pois é a chave de busca
             
+            // CORREÇÃO: Usar o ID correto para atualização
             return pessoaRepository.save(pessoa);
         } else {
             throw new RuntimeException("Pessoa com documento " + documento + " não encontrada");
+        }
+    }
+
+    public Pessoa atualizarPessoaPorId(String id, Pessoa pessoaAtualizada) {
+        Optional<Pessoa> pessoaExistente = pessoaRepository.findById(id);
+        
+        if (pessoaExistente.isPresent()) {
+            Pessoa pessoa = pessoaExistente.get();
+            
+            // Verificar se o novo documento já existe em OUTRA pessoa
+            if (!pessoa.getDocumento().equals(pessoaAtualizada.getDocumento()) &&
+                pessoaRepository.existsByDocumento(pessoaAtualizada.getDocumento())) {
+                throw new RuntimeException("Documento " + pessoaAtualizada.getDocumento() + " já existe");
+            }
+            
+            // Verificar se o novo telefone já existe em OUTRA pessoa
+            if (!pessoa.getTelefone().equals(pessoaAtualizada.getTelefone()) &&
+                pessoaRepository.existsByTelefone(pessoaAtualizada.getTelefone())) {
+                throw new RuntimeException("Telefone " + pessoaAtualizada.getTelefone() + " já existe");
+            }
+            
+            // Atualizar TODOS os campos, incluindo o documento
+            pessoa.setNome(pessoaAtualizada.getNome());
+            pessoa.setDocumento(pessoaAtualizada.getDocumento());
+            pessoa.setTelefone(pessoaAtualizada.getTelefone());
+            
+            return pessoaRepository.save(pessoa);
+        } else {
+            throw new RuntimeException("Pessoa com ID " + id + " não encontrada");
         }
     }
     

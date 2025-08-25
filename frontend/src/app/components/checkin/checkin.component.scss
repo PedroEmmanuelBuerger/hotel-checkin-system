@@ -224,18 +224,19 @@ h1 {
   border: 1px solid #ddd;
   border-radius: 6px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  max-height: 200px;
+  max-height: 400px; /* Aumentado de 200px para 400px */
   overflow-y: auto;
-  z-index: 1000;
+  z-index: 9999; /* Z-index muito alto para aparecer acima de tudo */
   margin-top: 2px;
 }
 
 .sugestao-item {
-  padding: 10px 15px;
+  padding: 12px 15px; /* Aumentado padding para melhor clicabilidade */
   cursor: pointer;
   border-bottom: 1px solid #f8f9fa;
   transition: background-color 0.2s ease;
-  font-size: 12px;
+  font-size: 14px; /* Aumentado fonte para melhor legibilidade */
+  line-height: 1.4; /* Melhor espaçamento entre linhas */
 }
 
 .sugestao-item:hover {
@@ -298,16 +299,18 @@ h1 {
   border: 1px solid #ddd;
   border-radius: 6px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  max-height: 200px;
+  max-height: 400px; /* Aumentado de 200px para 400px */
   overflow-y: auto;
-  z-index: 1000;
+  z-index: 9999; /* Z-index muito alto para aparecer acima de tudo */
 }
 
 .resultado-item {
-  padding: 10px 15px;
+  padding: 12px 15px; /* Aumentado padding para melhor clicabilidade */
   cursor: pointer;
   border-bottom: 1px solid #f8f9fa;
   transition: background-color 0.2s ease;
+  font-size: 14px; /* Aumentado fonte para melhor legibilidade */
+  line-height: 1.4; /* Melhor espaçamento entre linhas */
 }
 
 .resultado-item:hover {
@@ -606,6 +609,24 @@ h1 {
   .container {
     padding: 15px;
   }
+}
+
+/* Regras para garantir que os dropdowns apareçam acima de tudo */
+.sugestoes-container,
+.resultados-busca {
+  position: absolute !important;
+  z-index: 9999 !important;
+  /* Garante que não seja cortado por overflow hidden das divs pai */
+  overflow: visible !important;
+}
+
+/* Remove qualquer overflow hidden das divs que podem cortar o dropdown */
+.main-card,
+.card-content,
+.checkin-grid,
+.pessoa-field,
+.search-container {
+  overflow: visible !important;
 }
 
 /* Animações suaves */
