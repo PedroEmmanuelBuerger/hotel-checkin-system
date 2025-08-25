@@ -73,7 +73,6 @@ Para executar o projeto 100% funcional, você precisa ter instalado:
 ### 1. Clone do Repositório
 ```bash
 git clone https://github.com/seu-usuario/hotel-checkin-system.git
-cd hotel-checkin-system
 ```
 
 ### 2. Inicialização com Docker Compose
@@ -93,6 +92,8 @@ docker-compose logs -f
 - **Backend API**: http://localhost:8080
 - **MongoDB**: mongodb://localhost:27017
 - **Mongo Express**: http://localhost:8081
+  - **Usuário**: admin
+  - **Senha**: password123
 
 ### 4. Verificação de Saúde
 ```bash
@@ -107,6 +108,16 @@ docker-compose logs backend
 docker-compose logs frontend
 docker-compose logs mongodb
 ```
+
+### 5. Acesso ao MongoDB Express
+Para visualizar e gerenciar o banco de dados através da interface web:
+
+1. **Acesse**: http://localhost:8081
+2. **Login**: admin
+3. **Senha**: password123
+4. **Banco de dados**: hotel_checkin
+
+**Nota**: O MongoDB Express permite visualizar coleções, documentos e executar consultas diretamente no navegador.
 
 ## Rotas para Teste
 
