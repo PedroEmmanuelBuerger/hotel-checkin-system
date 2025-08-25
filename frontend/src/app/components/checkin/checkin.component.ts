@@ -439,35 +439,67 @@ export class CheckinComponent implements OnInit {
     console.log('Data Entrada (só data):', dataEntradaDate);
     console.log('Data Saída (só data):', dataSaidaDateOnly);
     
-    dataAtual = new Date(dataEntradaDate);
+    // CORREÇÃO: Verificar se entrada e saída são no mesmo dia
+    const mesmoDia = dataEntradaDate.getTime() === dataSaidaDateOnly.getTime();
+    console.log('Mesmo dia?', mesmoDia);
     
-    while (dataAtual < dataSaidaDateOnly) {
-      contadorNoites++;
-      const diaSemana = dataAtual.getDay();
+    if (mesmoDia) {
+      // Caso 1: Entrada e saída no mesmo dia
+      const diaSemana = dataEntradaDate.getDay();
       const isFimDeSemana = diaSemana === 0 || diaSemana === 6; // 0 = domingo, 6 = sábado
       
+      // Sempre cobra pelo menos 1 diária base
       const tarifaDiaria = isFimDeSemana ? 150 : 120;
-      let taxaGaragem = 0;
+      valorTotal += tarifaDiaria;
       
+      let taxaGaragem = 0;
       if (checkin.adicionalVeiculo) {
         taxaGaragem = isFimDeSemana ? 20 : 15;
+        valorTotal += taxaGaragem;
       }
       
-      const totalDia = tarifaDiaria + taxaGaragem;
-      valorTotal += totalDia;
-      
-      console.log(`Noite ${contadorNoites}:`, {
-        data: dataAtual.toDateString(),
-        diaSemana: dataAtual.getDay(),
+      console.log('Check-in mesmo dia:', {
+        data: dataEntradaDate.toDateString(),
+        diaSemana: diaSemana,
         isFimDeSemana,
         tarifaDiaria,
         taxaGaragem,
-        totalDia,
         valorTotalAcumulado: valorTotal
       });
       
-      // Avançar para o próximo dia
-      dataAtual.setDate(dataAtual.getDate() + 1);
+      contadorNoites = 1; // Conta como 1 noite
+    } else {
+      // Caso 2: Entrada e saída em dias diferentes
+      dataAtual = new Date(dataEntradaDate);
+      
+      while (dataAtual < dataSaidaDateOnly) {
+        contadorNoites++;
+        const diaSemana = dataAtual.getDay();
+        const isFimDeSemana = diaSemana === 0 || diaSemana === 6; // 0 = domingo, 6 = sábado
+        
+        const tarifaDiaria = isFimDeSemana ? 150 : 120;
+        let taxaGaragem = 0;
+        
+        if (checkin.adicionalVeiculo) {
+          taxaGaragem = isFimDeSemana ? 20 : 15;
+        }
+        
+        const totalDia = tarifaDiaria + taxaGaragem;
+        valorTotal += totalDia;
+        
+        console.log(`Noite ${contadorNoites}:`, {
+          data: dataAtual.toDateString(),
+          diaSemana: dataAtual.getDay(),
+          isFimDeSemana,
+          tarifaDiaria,
+          taxaGaragem,
+          totalDia,
+          valorTotalAcumulado: valorTotal
+        });
+        
+        // Avançar para o próximo dia
+        dataAtual.setDate(dataAtual.getDate() + 1);
+      }
     }
     
     console.log('Total após noites:', valorTotal);
