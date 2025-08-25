@@ -407,16 +407,8 @@ export class CheckinComponent implements OnInit {
   }
 
   calcularValorGasto(checkin: Checkin): number {
-    console.log('=== INÍCIO DO CÁLCULO ===');
-    console.log('Check-in:', checkin);
-    
     const dataEntrada = new Date(checkin.dataEntrada);
     const dataSaida = new Date(checkin.dataSaida);
-    
-    console.log('Data Entrada (Date):', dataEntrada);
-    console.log('Data Saída (Date):', dataSaida);
-    console.log('Data Entrada (String):', checkin.dataEntrada);
-    console.log('Data Saída (String):', checkin.dataSaida);
     
     let valorTotal = 0;
     
@@ -425,10 +417,6 @@ export class CheckinComponent implements OnInit {
     // CORREÇÃO: Parar na data de saída (exclusiva)
     const dataSaidaDate = new Date(dataSaida);
     
-    console.log('Data Atual (início):', dataAtual);
-    console.log('Data Saída (limite):', dataSaidaDate);
-    console.log('Condição while:', dataAtual < dataSaidaDate);
-    
     // CORREÇÃO: Loop apenas pelas noites (entrada inclusiva, saída exclusiva)
     let contadorNoites = 0;
     
@@ -436,12 +424,8 @@ export class CheckinComponent implements OnInit {
     const dataEntradaDate = new Date(dataEntrada.getFullYear(), dataEntrada.getMonth(), dataEntrada.getDate());
     const dataSaidaDateOnly = new Date(dataSaida.getFullYear(), dataSaida.getMonth(), dataSaida.getDate());
     
-    console.log('Data Entrada (só data):', dataEntradaDate);
-    console.log('Data Saída (só data):', dataSaidaDateOnly);
-    
     // CORREÇÃO: Verificar se entrada e saída são no mesmo dia
     const mesmoDia = dataEntradaDate.getTime() === dataSaidaDateOnly.getTime();
-    console.log('Mesmo dia?', mesmoDia);
     
     if (mesmoDia) {
       // Caso 1: Entrada e saída no mesmo dia
@@ -458,14 +442,7 @@ export class CheckinComponent implements OnInit {
         valorTotal += taxaGaragem;
       }
       
-      console.log('Check-in mesmo dia:', {
-        data: dataEntradaDate.toDateString(),
-        diaSemana: diaSemana,
-        isFimDeSemana,
-        tarifaDiaria,
-        taxaGaragem,
-        valorTotalAcumulado: valorTotal
-      });
+
       
       contadorNoites = 1; // Conta como 1 noite
     } else {
@@ -487,23 +464,14 @@ export class CheckinComponent implements OnInit {
         const totalDia = tarifaDiaria + taxaGaragem;
         valorTotal += totalDia;
         
-        console.log(`Noite ${contadorNoites}:`, {
-          data: dataAtual.toDateString(),
-          diaSemana: dataAtual.getDay(),
-          isFimDeSemana,
-          tarifaDiaria,
-          taxaGaragem,
-          totalDia,
-          valorTotalAcumulado: valorTotal
-        });
+
         
         // Avançar para o próximo dia
         dataAtual.setDate(dataAtual.getDate() + 1);
       }
     }
     
-    console.log('Total após noites:', valorTotal);
-    console.log('Número de noites contadas:', contadorNoites);
+
     
     // Regra das 16:30 - só cobra se sair após 16:30
     const horaSaida = dataSaida.getHours();
@@ -511,10 +479,7 @@ export class CheckinComponent implements OnInit {
     const horaSaidaMinutos = horaSaida * 60 + minutoSaida;
     const hora1630Minutos = 16 * 60 + 30; // 16:30 em minutos
     
-    console.log('Hora de saída:', `${horaSaida}:${minutoSaida}`);
-    console.log('Hora de saída em minutos:', horaSaidaMinutos);
-    console.log('Hora 16:30 em minutos:', hora1630Minutos);
-    console.log('Aplica regra 16:30?', horaSaidaMinutos > hora1630Minutos);
+
     
     if (horaSaidaMinutos > hora1630Minutos) {
       const diaSemanaSaida = dataSaida.getDay();
@@ -530,18 +495,10 @@ export class CheckinComponent implements OnInit {
       const totalExtra = tarifaDiariaExtra + taxaGaragemExtra;
       valorTotal += totalExtra;
       
-      console.log('Dia extra aplicado:', {
-        data: dataSaida.toDateString(),
-        diaSemana: diaSemanaSaida,
-        isFimDeSemana: isFimDeSemanaSaida,
-        tarifaDiariaExtra,
-        taxaGaragemExtra,
-        totalExtra,
-        valorTotalFinal: valorTotal
-      });
+
     }
     
-    console.log('=== VALOR FINAL:', valorTotal, '===');
+
     return valorTotal;
   }
 
