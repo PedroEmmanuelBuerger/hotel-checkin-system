@@ -72,8 +72,7 @@ Para executar o projeto 100% funcional, você precisa ter instalado:
 
 ### 1. Clone do Repositório
 ```bash
-git clone https://github.com/seu-usuario/hotel-checkin-system.git
-cd hotel-checkin-system
+git clone https://github.com/PedroEmmanuelBuerger/hotel-checkin-system.git
 ```
 
 ### 2. Inicialização com Docker Compose
